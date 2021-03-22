@@ -1,0 +1,18 @@
+agendado
+confirmada
+não confirmada
+sem contato
+aguardando precisar
+
+Prioridade vira Condição:
+  - normal
+  - condições:
+    - criança
+    - idoso
+    - doença grave
+    - animal
+    - mora fora
+    - gestante
+    
+    Checkin filtarar por horário
+    
