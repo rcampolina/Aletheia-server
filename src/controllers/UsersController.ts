@@ -24,6 +24,18 @@ export default class UsersController {
     const trx = await db.transaction();
   
     try {
+      if ( 
+        name == undefined || name == '' ||
+        email == undefined || email == '' ||
+        phone == undefined || phone == '' ||
+        whatsapp == undefined || whatsapp == '' ||
+        cpf == undefined || cpf == '' ||
+        birthDate == undefined || birthDate == ''
+      ) {
+        return response.status(400).json({
+          error: 'Obrigatory filds must be value: '
+        })
+      }
       await trx('users').insert({
         name,
         email,
