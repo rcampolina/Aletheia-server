@@ -3,11 +3,11 @@ import Knex from 'knex';
 export async function up(knex: Knex) {
   return knex.schema.createTable('attendanceUsers', table => {
     table.integer('id')
-        .primary()
-        .references('attendance_users_id')
-        .inTable('attendances')
-        .onUpdate('CASCADE')
-        .onDelete('CASCADE');
+        .primary();
+        // .references('attendance_users_id')
+        // .inTable('attendances')
+        // .onUpdate('CASCADE')
+        // .onDelete('CASCADE');
     
     table.integer('attendance_id')
         .unique()

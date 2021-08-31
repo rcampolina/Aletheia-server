@@ -1,10 +1,13 @@
 import knex from 'knex';
-import path from 'path';
 
 const db = knex({
-  client: 'sqlite3',
+  client: 'postgresql',
   connection: {
-    filename: path.resolve(__dirname, 'database.sqlite')
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: '1816',
+    database: 'Aletheia',
   },
   useNullAsDefault: true,
 });
