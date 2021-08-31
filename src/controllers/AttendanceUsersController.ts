@@ -83,7 +83,7 @@ export default class AttendanceUsersController {
     const usersController = new UsersController();
     const existUser = usersController.verifiExists(Number(idUser));
 
-    if (existUser) {
+    if (await existUser) {
       response.status(400).json({
         method: 'updateStatusAttendanceUsers',
         error: 'User not found',
