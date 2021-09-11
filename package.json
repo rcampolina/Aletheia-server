@@ -9,7 +9,9 @@
     "start": "node src/server.js",
     "build": "tsc",
     "knex:migrate": "knex --knexfile knexfile.ts migrate:latest",
-    "knex:migrate:rollback": "knex --knexfile knexfile.ts migrate:rollback"
+    "knex:migrate:rollback": "knex --knexfile knexfile.ts migrate:rollback",
+    "knex:release": "knex --knexfile knexfile.js migrate:latest",
+    "knex:release:rollback": "knex --knexfile knexfile.js migrate:rollback"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
