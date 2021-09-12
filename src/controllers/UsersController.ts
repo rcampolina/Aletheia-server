@@ -38,7 +38,7 @@ export default class UsersController {
 
       const duplicated = await this.verifiExistsCPForEmail(cpf, email)
 
-      if (duplicated) {
+      if (!duplicated) {
         return response.status(400).json({
           error: 'Já existe um usário com esse email ou cpf'
         }) 
