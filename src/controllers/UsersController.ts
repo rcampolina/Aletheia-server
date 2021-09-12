@@ -32,9 +32,18 @@ export default class UsersController {
         birthDate == undefined || birthDate == ''
       ) {
         return response.status(400).json({
-          error: 'Obrigatory filds must be value: '
+          error: 'Campos obrigatórios devem ser preenchidos'
         })
       }
+
+      const duplicated = await this.verifiExistsCPForEmail(cpf, email)
+
+      if (duplicated) {
+        return response.status(400).json({
+          error: 'Já existe um usário com esse email ou cpf'
+        }) 
+      }
+
       await trx('users').insert({
         name,
         email,
@@ -54,7 +63,7 @@ export default class UsersController {
       
       await trx.rollback();
       return response.status(400).json({
-        error: 'Unexpected error while creating new user: ' + err
+        error: 'Erro inesperado ao criar usuário ' + err
       })
     }
   }
@@ -62,5 +71,14 @@ export default class UsersController {
   async verifiExists(idUser: Number) {
     const user = await db('users').where('id', '=', idUser).select(['users.id']);
     return user
-  }  
+  }
+
+  async verifiExistsCPForEmail(cpf: string, email: string) {
+    const user = await db('users')
+                      .where('cpf', '=', cpf)
+                      .orWhere('email', '=', email)
+                      .select(['users.id']);
+    return user
+  }
+
 }

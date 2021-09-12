@@ -7,8 +7,13 @@ export default class StatusAttendanceUsersControllers {
     response.json(status);
   }
 
-  async verifiExists(idStatus: Number) {
+  async verifiExists(idStatus: number) {
     const status = await db('status_attendance_users').where('id', '=', idStatus).select(['status_attendance_users.id']);
+    return status;
+  }
+
+  async verifiExistsValue(value: string) {
+    const status = await db('status_attendance_users').where('value', '=', value).select(['status_attendance_users.value']);
     return status;
   }
 }

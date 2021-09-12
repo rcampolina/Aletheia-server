@@ -7,7 +7,6 @@ import UsersController from './UsersController';
 export default class AttendanceUsersController {
   async index(request: Request, response: Response) {
     const attendanceUsers = await db('attendanceUsers').select(['attendanceUsers.*']);
-
     response.json(attendanceUsers);
   }
 
@@ -61,9 +60,49 @@ export default class AttendanceUsersController {
     }
   }
 
+  async delete(request: Request, response: Response) {
+    const { attendance_id, user_id } = request.body;
+
+    const usersController = new UsersController();
+    const existUser = await usersController.verifiExists(Number(user_id));
+
+      if (existUser.length === 0) {
+        return response.status(400).json({
+          method: 'create',
+          error: 'User not found',
+        });
+      }
+
+    const attendanceController = new AttendanceController();
+    const existAttendance = await attendanceController.verifiExists(Number(attendance_id));
+
+    if (existAttendance.length === 0) {
+      return response.status(400).json({
+        method: 'create',
+        error: 'This attendance not exists',
+      });
+    }
+
+    const trx = await db.transaction();
+
+    try {
+      await trx('attendanceUsers')
+            .delete()
+            .where('attendance_id', '=', attendance_id)
+            .andWhere('user_id', '=', user_id);
+
+      await trx.commit();
+      return response.status(201).send();
+    } catch (err) {
+      await trx.rollback();
+      return response.status(400).json({
+        error: 'Erro inesperado ao remover usuário do atendimento',
+      });
+    }
+  }
+
   async usersAttendance(request: Request, response: Response) {
     const attendanceUsers = await db('attendanceUsers').select(['attendanceUsers.*']);
-
     response.json(attendanceUsers);
   }
 
@@ -112,10 +151,5 @@ export default class AttendanceUsersController {
       });
     }
   }
-
-  // async verifiExistsAttendanceId(idAttendanceId: Number) {
-  //   const attendanceUser = await db('attendanceUsers').where('attendance_id', '=', idAttendanceId).select(['attendanceUsers.id']);
-
-  //   return attendanceUser
-  // }
+  
 }

@@ -33,8 +33,14 @@ export default class ConditionsController {
     }
   }
 
-  async verifiExists(idCondition: Number) {
+  async verifiExists(idCondition: number) {
     const condition = await db('conditions').where('id', '=', idCondition).select(['conditions.id']);
     return condition
-  }  
+  }
+
+  async verifiExistsValue(value: string) {
+    const condition = await db('conditions').where('value', '=', value).select(['conditions.value']);
+    return condition
+  }
+
 }
