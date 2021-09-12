@@ -16,6 +16,13 @@ export default class AttendanceUsersController {
       .where('user_id', '=', idUser)
       .select(['attendanceUsers.*']);
 
+    if (attendanceUser.length === 0) {
+      return response.status(400).json({
+        method: 'findByUser',
+        error: 'Atendimento não encontrado para usuário solicitado',
+      });
+    }
+
     response.json(attendanceUser);
   }
 
@@ -127,6 +134,13 @@ export default class AttendanceUsersController {
       });
     }
 
+    if (!idStatus) {
+      response.status(400).json({
+        method: 'updateStatusAttendanceUsers',
+        error: 'Status não informado',
+      });
+    }
+
     const statusController = new StatusAttendanceUsersControllers();
     const existStatus = statusController.verifiExists(Number(idStatus));
 
@@ -150,6 +164,14 @@ export default class AttendanceUsersController {
         error: 'Error in update status attendance user',
       });
     }
+  }
+
+  async table(request: Request, response: Response) {
+    const table = await db('attendanceUsers')
+                        .select(['users.*'])
+                        .join('users', 'users.id', 'attendanceUsers.user_id')
+                        .join('attendances', 'attendances.id', 'attendanceUsers.attendance_id');
+    response.json(table);
   }
   
 }

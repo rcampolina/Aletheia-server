@@ -21,17 +21,17 @@ routes.get('/attendance', attendanceControllers.index);
 routes.post('/attendance', attendanceControllers.create);
 
 routes.get('/attendanceUsers', attendanceUsersControllers.index);
+routes.get('/attendanceUsers/table', attendanceUsersControllers.table);
 routes.get('/attendanceUsers/:idUser', attendanceUsersControllers.findByUser);
 routes.post('/attendanceUsers', attendanceUsersControllers.create);
 routes.patch('/attendanceUsers/:id', attendanceUsersControllers.updateStatusAttendanceUsers);
 routes.delete('/attendanceUsers', attendanceUsersControllers.delete);
-routes.get('/attendanceUsers/:attendance_id', attendanceUsersControllers.table);
 
 routes.get('/conditions', conditionsControllers.index);
 routes.post('/conditions', conditionsControllers.create);
 
 routes.get('/statusAttendanceUsers', statusControllers.index);
 
-routes.get('/version', version.index);
+routes.get('/version/v', version.index);
 
 export default routes;
