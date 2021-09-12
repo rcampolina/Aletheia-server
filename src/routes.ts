@@ -24,6 +24,8 @@ routes.get('/attendanceUsers', attendanceUsersControllers.index);
 routes.get('/attendanceUsers/:idUser', attendanceUsersControllers.findByUser);
 routes.post('/attendanceUsers', attendanceUsersControllers.create);
 routes.patch('/attendanceUsers/:id', attendanceUsersControllers.updateStatusAttendanceUsers);
+routes.delete('/attendanceUsers', attendanceUsersControllers.delete);
+routes.get('/attendanceUsers/:attendance_id', attendanceUsersControllers.table);
 
 routes.get('/conditions', conditionsControllers.index);
 routes.post('/conditions', conditionsControllers.create);
