@@ -4,7 +4,6 @@ import db from '../database/connection';
 export default class ConditionsController {
   async index(request: Request, response: Response) {
     const conditions = await db('conditions').select(['conditions.*']);
-
     response.json(conditions);
   }  
   
@@ -36,7 +35,6 @@ export default class ConditionsController {
 
   async verifiExists(idCondition: Number) {
     const condition = await db('conditions').where('id', '=', idCondition).select(['conditions.id']);
-
     return condition
   }  
 }

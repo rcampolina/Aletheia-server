@@ -4,21 +4,16 @@ import db from '../database/connection';
 export default class AttendanceController {
   async index(request: Request, response: Response) {
     const attendance = await db('attendances').select(['attendances.*']);
-
     response.json(attendance);
   }
 
   async attendanceForDay(request: Request, response: Response) {
     const attendance = await db('attendances').select(['attendances.*']);
-
     response.json(attendance);
   }
 
   async create(request: Request, response: Response) {
     const { dateHour } = request.body;
-
-    console.log(dateHour);
-
     const trx = await db.transaction();
 
     const nextAttendanceUsers = await trx.raw(

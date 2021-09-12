@@ -4,7 +4,6 @@ import db from '../database/connection';
 export default class UsersController {
   async index(request: Request, response: Response) {
     const users = await db('users').select(['users.*']);
-
     response.json(users);
   }  
   
@@ -62,7 +61,6 @@ export default class UsersController {
 
   async verifiExists(idUser: Number) {
     const user = await db('users').where('id', '=', idUser).select(['users.id']);
-
     return user
   }  
 }

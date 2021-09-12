@@ -26,7 +26,6 @@ export default class AttendanceUsersController {
     const usersController = new UsersController();
     const existUser = await usersController.verifiExists(Number(user_id));
 
-    console.log(existUser);
       if (existUser.length === 0) {
         return response.status(400).json({
           method: 'create',
@@ -37,7 +36,6 @@ export default class AttendanceUsersController {
     const attendanceController = new AttendanceController();
     const existAttendance = await attendanceController.verifiExists(Number(attendance_id));
 
-    console.log(existAttendance);
     if (existAttendance.length === 0) {
       return response.status(400).json({
         method: 'create',
@@ -101,7 +99,6 @@ export default class AttendanceUsersController {
     }
 
     // if user exsts and valid status then update
-
     try {
       const attendanceUser = await db('attendanceUsers').where('id', '=', idUser).update({
         status_id: idStatus,
