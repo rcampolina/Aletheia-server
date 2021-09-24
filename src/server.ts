@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes';
+import SentryConfig from './services/sentryConfig';
 
+SentryConfig();
 const app = express();
 
 app.use(cors());
