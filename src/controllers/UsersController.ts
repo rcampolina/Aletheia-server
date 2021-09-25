@@ -26,7 +26,6 @@ export default class UsersController {
       if ( 
         name == undefined || name == '' ||
         email == undefined || email == '' ||
-        phone == undefined || phone == '' ||
         whatsapp == undefined || whatsapp == '' ||
         cpf == undefined || cpf == '' ||
         birthDate == undefined || birthDate == ''
