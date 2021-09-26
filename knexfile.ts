@@ -2,7 +2,8 @@ import path from 'path';
 
 const parse = require('pg-connection-string').parse;
 const pgconfig = parse(process.env.DB_URI);
-pgconfig.ssl = { rejectUnauthorized: false };
+if (!process.env.DEVELOPMENT)
+  pgconfig.ssl = { rejectUnauthorized: false };
 
 module.exports = {
   client: 'postgresql',

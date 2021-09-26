@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "index.js",
+  "description": "Server Aletheia",
+  "repository": "private",
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsnd --transpile-only --ignore-watch node_modules --respawn src/server.ts",
