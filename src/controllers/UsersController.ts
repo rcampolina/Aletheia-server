@@ -68,16 +68,14 @@ export default class UsersController {
   }
 
   async verifiExists(idUser: Number) {
-    const user = await db('users').where('id', '=', idUser).select(['users.id']);
-    return user
+    return await db('users').where('id', '=', idUser).select(['users.id']);
   }
 
   async verifiExistsCPForEmail(cpf: string, email: string) {
-    const user = await db('users')
+    return await db('users')
                       .where('cpf', '=', cpf)
                       .orWhere('email', '=', email)
                       .select(['users.id']);
-    return user
   }
 
 }
