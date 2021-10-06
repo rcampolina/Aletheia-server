@@ -1,66 +1,59 @@
 import { Request, Response } from 'express';
-import db from '../database/connection';
-import AttendanceController from './AttendanceController';
+import { AttendancesUsers } from '../models/AttendancesUsersModel';
+import AttendancesRepository from '../repositories/AttendancesRepository';
+import AttendancesUsersRepository from '../repositories/AttendancesUsersRepository';
+import UsersRepository from '../repositories/UsersRepository';
 import StatusAttendanceUsersControllers from './StatusAttendanceUsersControllers';
-import UsersController from './UsersController';
-
 export default class AttendanceUsersController {
   async index(request: Request, response: Response) {
-    const attendanceUsers = await db('attendanceUsers').select(['attendanceUsers.*']);
-    response.json(attendanceUsers);
+    const attendancesUsersRepository = new AttendancesUsersRepository();
+    const attendances = await attendancesUsersRepository.findAll();
+    response.json(attendances);
   }
 
   async findByUser(request: Request, response: Response) {
-    const { idUser } = request.params;
-    const attendanceUser = await db('attendanceUsers')
-      .where('user_id', '=', idUser)
-      .select(['attendanceUsers.*']);
+    const { idUser: user_id } = request.params;
+    const attendancesUsersRepository = new AttendancesUsersRepository();
+    const attendancesUsers = await attendancesUsersRepository.findByUser(Number(user_id));
 
-    if (attendanceUser.length === 0) {
+    if (!attendancesUsers) {
       return response.status(400).json({
         method: 'findByUser',
         error: 'Atendimento não encontrado para usuário solicitado',
       });
     }
 
-    response.json(attendanceUser);
+    response.json(attendancesUsers);
   }
 
   async create(request: Request, response: Response) {
-    const { attendance_id, user_id } = request.body;
+    const attendanceUser: AttendancesUsers = request.body;
+    try {
+      const usersRepository = new UsersRepository();
+      const existUser = await usersRepository.findId(Number(attendanceUser.user_id));
 
-    const usersController = new UsersController();
-    const existUser = await usersController.verifiExists(Number(user_id));
+        if (existUser == 0) {
+          return response.status(400).json({
+            method: 'create',
+            error: 'Usuário não encontrado',
+          });
+        }
 
-      if (existUser.length === 0) {
+      const attendancesRepository = new AttendancesRepository();    
+      const existAttendance = await attendancesRepository.findId(attendanceUser.attendance_id);
+
+      if (existAttendance == 0) {
         return response.status(400).json({
           method: 'create',
-          error: 'User not found',
+          error: 'Atendimento não cadastrado',
         });
       }
 
-    const attendanceController = new AttendanceController();
-    const existAttendance = await attendanceController.verifiExists(Number(attendance_id));
-
-    if (existAttendance.length === 0) {
-      return response.status(400).json({
-        method: 'create',
-        error: 'This attendance not exists',
-      });
-    }
-
-    const trx = await db.transaction();
-
-    try {
-      await trx('attendanceUsers').insert({
-        attendance_id,
-        user_id,
-      });
-
-      await trx.commit();
-      return response.status(201).send();
+      const attendancesUsersRepository = new AttendancesUsersRepository()
+      const created = await attendancesUsersRepository.create(attendanceUser)
+      
+      return response.status(201).json("Atendimento criado para o usuário");
     } catch (err) {
-      await trx.rollback();
       return response.status(400).json({
         error: 'Unexpected error while creating new attendanceUser: ',
       });
@@ -68,94 +61,81 @@ export default class AttendanceUsersController {
   }
 
   async delete(request: Request, response: Response) {
-    const { attendance_id, user_id } = request.body;
+    try {
+      const attendancesUser: AttendancesUsers = request.body;
 
-    const usersController = new UsersController();
-    const existUser = await usersController.verifiExists(Number(user_id));
+      const usersRepository = new UsersRepository();
+      const existUser = await usersRepository.findId(attendancesUser.user_id);
 
-      if (existUser.length === 0) {
+        if (existUser == 0) {
+          return response.status(400).json({
+            method: 'create',
+            error: 'User not found',
+          });
+        }
+
+      const attendancesRepository = new AttendancesRepository();
+      const existAttendance = await attendancesRepository.findId(attendancesUser.attendance_id);
+
+      if (existAttendance != 0) {
         return response.status(400).json({
           method: 'create',
-          error: 'User not found',
+          error: 'This attendance not exists',
         });
       }
 
-    const attendanceController = new AttendanceController();
-    const existAttendance = await attendanceController.verifiExists(Number(attendance_id));
+      const attendancesUsersRepository = new AttendancesUsersRepository();
+      await attendancesUsersRepository.delete(attendancesUser);
 
-    if (existAttendance.length === 0) {
-      return response.status(400).json({
-        method: 'create',
-        error: 'This attendance not exists',
-      });
-    }
-
-    const trx = await db.transaction();
-
-    try {
-      await trx('attendanceUsers')
-            .delete()
-            .where('attendance_id', '=', attendance_id)
-            .andWhere('user_id', '=', user_id);
-
-      await trx.commit();
       return response.status(201).send();
     } catch (err) {
-      await trx.rollback();
       return response.status(400).json({
         error: 'Erro inesperado ao remover usuário do atendimento',
       });
     }
   }
 
-  async usersAttendance(request: Request, response: Response) {
-    const attendanceUsers = await db('attendanceUsers').select(['attendanceUsers.*']);
-    response.json(attendanceUsers);
-  }
-
   async updateStatusAttendanceUsers(request: Request, response: Response) {
     const { id: idUser } = request.params;
     const { idStatus } = request.body;
-
-    if (!idUser) {
-      response.status(400).json({
-        method: 'updateStatusAttendanceUsers',
-        error: 'Id expected in params',
-      });
-    }
-
-    const usersController = new UsersController();
-    const existUser = usersController.verifiExists(Number(idUser));
-
-    if (await existUser) {
-      response.status(400).json({
-        method: 'updateStatusAttendanceUsers',
-        error: 'User not found',
-      });
-    }
-
-    if (!idStatus) {
-      response.status(400).json({
-        method: 'updateStatusAttendanceUsers',
-        error: 'Status não informado',
-      });
-    }
-
-    const statusController = new StatusAttendanceUsersControllers();
-    const existStatus = statusController.verifiExists(Number(idStatus));
-
-    if (!existStatus) {
-      response.status(400).json({
-        method: 'updateStatusAttendanceUsers',
-        error: 'Status to update not found',
-      });
-    }
-
-    // if user exsts and valid status then update
     try {
-      const attendanceUser = await db('attendanceUsers').where('id', '=', idUser).update({
-        status_id: idStatus,
-      });
+      if (!idUser) {
+        response.status(400).json({
+          method: 'updateStatusAttendanceUsers',
+          error: 'Id expected in params',
+        });
+      }
+
+      const usersRepository = new UsersRepository();
+      const existUser = await usersRepository.findId(Number(idUser));
+
+      if (existUser == 0) {
+        response.status(400).json({
+          method: 'updateStatusAttendanceUsers',
+          error: 'User not found',
+        });
+      }
+
+      if (!idStatus) {
+        response.status(400).json({
+          method: 'updateStatusAttendanceUsers',
+          error: 'Status não informado',
+        });
+      }
+
+      const statusController = new StatusAttendanceUsersControllers();
+      const existStatus = await statusController.verifiExists(Number(idStatus));
+
+      if (!existStatus) {
+        response.status(400).json({
+          method: 'updateStatusAttendanceUsers',
+          error: 'Status to update not found',
+        });
+      }
+
+      // if user exsts and valid status then update
+      const attendancesUsersRepository = new AttendancesUsersRepository();
+      const attendanceUser = await attendancesUsersRepository.updateStatus(Number(idUser), idStatus);
 
       response.status(200).json(attendanceUser);
     } catch (err) {
@@ -167,10 +147,9 @@ export default class AttendanceUsersController {
   }
 
   async table(request: Request, response: Response) {
-    const table = await db('attendanceUsers')
-                        .select(['users.*'])
-                        .join('users', 'users.id', 'attendanceUsers.user_id')
-                        .join('attendances', 'attendances.id', 'attendanceUsers.attendance_id');
+    const attendancesUsersRepository = new AttendancesUsersRepository();
+    const table = await attendancesUsersRepository.table();
+
     response.json(table);
   }
   

@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
-import db from '../database/connection';
-
+import { Users } from '../models/UsersModel';
+import UsersRepository from '../repositories/UsersRepository';
 export default class UsersController {
   async index(request: Request, response: Response) {
-    const users = await db('users').select(['users.*']);
+    const usersRepository = new UsersRepository();
+    const users = await usersRepository.findAll();
     response.json(users);
   }  
   
@@ -19,9 +20,9 @@ export default class UsersController {
       condition,
       observations
     } = request.body;
-  
-    const trx = await db.transaction();
-  
+
+    let user: Users = request.body
+
     try {
       if ( 
         name == undefined || name == '' ||
@@ -35,47 +36,29 @@ export default class UsersController {
         })
       }
 
-      const duplicated = await this.verifiExistsCPForEmail(cpf, email)
+      const usersRepository = new UsersRepository();
+      const duplicated = await usersRepository.findIdByCPForEmail(cpf, email)
 
-      if (!duplicated) {
+      if (duplicated != 0) {
         return response.status(400).json({
           error: 'Já existe um usário com esse email ou cpf'
         }) 
       }
 
-      await trx('users').insert({
-        name,
-        email,
-        phone,
-        whatsapp,
-        cpf,
-        birthDate,
-        adress,
-        condition,
-        observations
-      });
-    
-      await trx.commit();  
-      return response.status(201).send();
+      const created = await usersRepository.create(user);
+
+      if (created)
+        return response.status(201).json({
+          message: 'Usuário Criado com sucesso!'
+        });
   
     } catch (err) {
-      
-      await trx.rollback();
       return response.status(400).json({
         error: 'Erro inesperado ao criar usuário ' + err
       })
     }
   }
 
-  async verifiExists(idUser: Number) {
-    return await db('users').where('id', '=', idUser).select(['users.id']);
-  }
-
-  async verifiExistsCPForEmail(cpf: string, email: string) {
-    return await db('users')
-                      .where('cpf', '=', cpf)
-                      .orWhere('email', '=', email)
-                      .select(['users.id']);
-  }
+  
 
 }

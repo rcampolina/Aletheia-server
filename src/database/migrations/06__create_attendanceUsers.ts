@@ -2,7 +2,7 @@ import Knex from 'knex';
 
 export async function up(knex: Knex) {
   return knex.schema.createTable('attendanceUsers', table => {
-    table.integer('id')
+    table.increments('id')
         .primary();
         // .references('attendance_users_id')
         // .inTable('attendances')
