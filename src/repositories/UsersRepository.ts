@@ -14,6 +14,9 @@ export default class UsersRepository {
       await trx('users').insert(user);    
       await trx.commit();
 
+      const created: Users = await this.findIdByCPForEmail(user.cpf, user.email)
+      if (created != undefined)
+        user.id = created.id
       return user;
   
     } catch (err) {
@@ -27,7 +30,7 @@ export default class UsersRepository {
     return await db('users').where('id', '=', idUser).select(['users.id']);
   }
 
-  async findIdByCPForEmail(cpf: string, email: string): Promise<number> {
-    return await db('users').where('cpf', '=', cpf).orWhere('email', '=', email).select(['users.id']);
+  async findIdByCPForEmail(cpf: string, email: string): Promise<Users> {
+    return await db<Users>('users').where('cpf', '=', cpf).orWhere('email', '=', email).first(['users.id']);
   }
 }

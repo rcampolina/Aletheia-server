@@ -9,7 +9,6 @@ export async function up(knex: Knex) {
     table.string('whatsapp');
     table.string('cpf').notNullable();
     table.date('birthDate');
-    table.string('adress');
     table.string('condition').notNullable();
     table.string('observations');
 

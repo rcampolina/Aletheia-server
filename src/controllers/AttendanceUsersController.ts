@@ -45,7 +45,7 @@ export default class AttendanceUsersController {
       if (existAttendance == 0) {
         return response.status(400).json({
           method: 'create',
-          error: 'Atendimento não cadastrado',
+          error: 'Atendimento não encontrado',
         });
       }
 
@@ -135,9 +135,9 @@ export default class AttendanceUsersController {
 
       // if user exsts and valid status then update
       const attendancesUsersRepository = new AttendancesUsersRepository();
-      const attendanceUser = await attendancesUsersRepository.updateStatus(Number(idUser), idStatus);
+      await attendancesUsersRepository.updateStatus(Number(idUser), idStatus);
 
-      response.status(200).json(attendanceUser);
+      response.status(200).json("Status atualizado para: " + idStatus);
     } catch (err) {
       response.status(400).json({
         method: 'updateStatusAttendanceUsers',

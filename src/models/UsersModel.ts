@@ -1,12 +1,13 @@
+import { Adress } from './AdressModel';
 export interface Users {
-  Id: number,
-  Name: string,
-  Email: string,
-  Phone: string,
-  Whatsapp: string,
-  Cpf: string,
-  BirthDate: string,
-  Adress: string,
-  Condition: string,
-  Observations: string
+  id: number,
+  name: string,
+  email: string,
+  phone: string,
+  whatsapp: string,
+  cpf: string,
+  birthDate: string,
+  condition: string,
+  observations: string
+  adress?: Adress
 }

@@ -7,6 +7,7 @@ export async function up(knex: Knex) {
     table.string('label').notNullable();
   }).then(()=> {
     return knex('status_attendance_users').insert([
+      {value: 'nao-agendado', label: 'Não Agendado'},
       {value: 'agendado', label: 'Agendado'},
       {value: 'confirmando', label: 'Confirmando'},
       {value: 'nao-confirmado', label: 'Não Confirmado'},
