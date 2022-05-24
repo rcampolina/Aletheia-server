@@ -15,11 +15,7 @@ export default class UsersController {
       name,
       email,
       phone,
-      whatsapp,
       cpf,
-      birthDate,
-      condition,
-      observations,
       adress,
     } = request.body;
 
@@ -30,10 +26,7 @@ export default class UsersController {
     try {
       if ( 
         name == undefined || name == '' ||
-        email == undefined || email == '' ||
-        whatsapp == undefined || whatsapp == '' ||
-        cpf == undefined || cpf == '' ||
-        birthDate == undefined || birthDate == ''
+        phone == undefined || phone == ''
       ) {
         return response.status(400).json({
           error: 'Campos obrigatórios devem ser preenchidos'
