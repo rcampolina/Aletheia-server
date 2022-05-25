@@ -27,7 +27,8 @@ export default class UsersController {
       if ( 
         name == undefined || name == '' ||
         phone == undefined || phone == ''
-      ) {
+      )
+      {
         return response.status(400).json({
           error: 'Campos obrigatórios devem ser preenchidos'
         })
